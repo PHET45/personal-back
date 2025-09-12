@@ -10,7 +10,7 @@ const app = express();
 // Global middleware
 app.use(cors({
     origin: [
-      'http://localhost:3000',                    // Frontend ตอน dev
+      'http://localhost:5173',                    // Frontend ตอน dev
       'https://kangwan-blog-dlhrrdylq-phet45s-projects.vercel.app' // Frontend ตอน production
     ]
   }));

@@ -5,6 +5,7 @@ export const PostController = {
   async getAll(req, res, next) {
     try {
       const posts = await PostService.getAllPosts()
+      
       res.json(posts)
     } catch (err) {
       next(err)
