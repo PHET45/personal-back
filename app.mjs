@@ -11,7 +11,7 @@ const app = express();
 app.use(cors({
     origin: [
       'http://localhost:5173',                    // Frontend ตอน dev
-      'https://kangwan-blog-dlhrrdylq-phet45s-projects.vercel.app' // Frontend ตอน production
+      'https://kangwan-blog.vercel.app/' // Frontend ตอน production
     ]
   }));
 app.use(express.json()); // ใช้แทน bodyParser
