@@ -11,7 +11,7 @@ const app = express();
 app.use(cors({
     origin: [
       'http://localhost:5173',                    // Frontend ตอน dev
-      'https://kangwan-blog.vercel.app/' // Frontend ตอน production
+      'https://kangwan-blog.vercel.app' // Frontend ตอน production
     ]
   }));
 app.use(express.json()); // ใช้แทน bodyParser
@@ -24,7 +24,7 @@ app.use((req, res, next) => {
 });
 
 // API Routes
-app.use('/api/posts', postRoutes);
+app.use('/posts', postRoutes);
 
 // Health check
 app.get('/', (req, res) => {
@@ -32,7 +32,7 @@ app.get('/', (req, res) => {
         message: 'Server is running!',
         timestamp: new Date().toISOString(),
         endpoints: {
-            posts: '/api/posts'
+            posts: '/posts'
         }
     });
 });
@@ -63,10 +63,10 @@ app.use((req, res) => {
         availableRoutes: [
             'GET /',
             'GET /health', 
-            'GET /api/posts',
-            'POST /api/posts',
-            'PUT /api/posts/:id',
-            'DELETE /api/posts/:id'
+            'GET /posts',
+            'POST /posts',
+            'PUT /posts/:id',
+            'DELETE /posts/:id'
         ]
     });
 });
@@ -76,6 +76,6 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log('🚀 Server started successfully!');
     console.log(`📍 Server running on http://localhost:${PORT}`);
-    console.log(`🔗 API available at http://localhost:${PORT}/api/posts`);
+    console.log(`🔗 API available at http://localhost:${PORT}/posts`);
     console.log(`💊 Health check at http://localhost:${PORT}/health`);
 });
