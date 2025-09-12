@@ -8,7 +8,12 @@ import postRoutes from './route/postRoutes.js';
 const app = express();
 
 // Global middleware
-app.use(cors());
+app.use(cors({
+    origin: [
+      'http://localhost:3000',                    // Frontend ตอน dev
+      'https://kangwan-blog-dlhrrdylq-phet45s-projects.vercel.app' // Frontend ตอน production
+    ]
+  }));
 app.use(express.json()); // ใช้แทน bodyParser
 app.use(express.urlencoded({ extended: true }));
 
