@@ -28,7 +28,7 @@ export const PostRepository = {
     const { data, error } = await supabase
       .from('posts')
       .select(
-        '*, category_id, status_id, comments(comment_text, created_at, users(username, profile_pic))'
+        '*, category_id, status_id, comments(comment_text, created_at, users(username, profile_pic)),category:categories!posts_category_id_fkey ( id, name )'
       )
       .eq('id', id)
       .single()
