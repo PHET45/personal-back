@@ -7,3 +7,5 @@ export const PostService = {
   updatePost: (id, post) => PostRepository.update(id, post),
   deletePost: (id) => PostRepository.delete(id),
 }
+
+

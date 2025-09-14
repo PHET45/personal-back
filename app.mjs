@@ -4,6 +4,7 @@ import 'dotenv/config'; // ใช้แทน dotenv.config()
 
 // Import routes
 import postRoutes from './route/postRoutes.js';
+import categoryRoutes from "./route/categoryRoutes.js"
 
 const app = express();
 
@@ -23,8 +24,9 @@ app.use((req, res, next) => {
     next();
 });
 
-// API Routes
+// API Routes posts
 app.use('/posts', postRoutes);
+app.use("/categories", categoryRoutes);
 
 // Health check
 app.get('/', (req, res) => {
