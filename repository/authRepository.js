@@ -5,8 +5,8 @@ export async function supabaseSignIn(email, password) {
   return await supabase.auth.signInWithPassword({ email, password });
 }
 
-export async function supabaseSignUp(email, password) {
-  return await supabase.auth.signUp({ email, password });
+export async function supabaseSignUp(name, username,email, password) {
+  return await supabase.auth.signUp({ name, username, email, password });
 }
 
 export async function supabaseGetUser(token) {
