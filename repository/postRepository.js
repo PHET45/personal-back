@@ -1,23 +1,12 @@
-import { createClient } from '@supabase/supabase-js'
-import dotenv from 'dotenv'
-
-dotenv.config()
-const supabaseUrl = process.env.SUPABASE_URL
-const supabaseAnonKey = process.env.SUPABASE_KEY
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables')
-}
-const supabase = createClient(supabaseUrl, supabaseAnonKey)
-
-export default supabase
+import supabase from '../util/supabaseClient.js'
 
 export const PostRepository = {
   async getAll() {
     const { data, error } = await supabase
       .from('posts')
       .select(
-        'id, title, description, image, date, likes_count, category_id, status_id, content,category:categories!posts_category_id_fkey ( id, name )')
+        'id, title, description, image, date, likes_count, category_id, status_id, content,category:categories!posts_category_id_fkey ( id, name )'
+      )
       .order('date', { ascending: false })
     if (error) throw error
     return data

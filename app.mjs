@@ -1,10 +1,11 @@
 import express from 'express';
 import cors from 'cors';
-import 'dotenv/config'; // ใช้แทน dotenv.config()
+
 
 // Import routes
 import postRoutes from './route/postRoutes.js';
 import categoryRoutes from "./route/categoryRoutes.js"
+import userRoutes from './route/userRoutes.js'
 
 const app = express();
 
@@ -27,6 +28,8 @@ app.use((req, res, next) => {
 // API Routes posts
 app.use('/posts', postRoutes);
 app.use("/categories", categoryRoutes);
+app.use('/users', userRoutes)
+
 
 // Health check
 app.get('/', (req, res) => {
@@ -66,9 +69,11 @@ app.use((req, res) => {
             'GET /',
             'GET /health', 
             'GET /posts',
+            'GET /categories',
             'POST /posts',
             'PUT /posts/:id',
             'DELETE /posts/:id'
+            
         ]
     });
 });

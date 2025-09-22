@@ -1,13 +1,16 @@
-export const authMiddleware = (req, res, next) => {
-  const token = req.headers["authorization"]
+import { getUserByToken } from "../service/authService.js";
 
-  if (!token) {
-    return res.status(401).json({ message: "Unauthorized: No token provided" })
+export async function authenticate(req, res, next) {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ error: "No token provided" });
+
+  try {
+    const user = await getUserByToken(token);
+    if (!user) return res.status(401).json({ error: "Unauthorized" });
+
+    req.user = user;
+    next();
+  } catch (err) {
+    res.status(401).json({ error: "Invalid token" });
   }
-
-  // 👉 ตรงนี้คุณสามารถ verify JWT หรือ Supabase auth ได้จริง
-  // เช่น decode JWT แล้วเอามาใส่ req.user
-  req.user = { id: "demo-user-id", role: "admin" }
-
-  next()
 }
