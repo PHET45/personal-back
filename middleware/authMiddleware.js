@@ -1,16 +1,17 @@
 import { getUserByToken } from "../service/authService.js";
 
 export async function authenticate(req, res, next) {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.status(401).json({ error: "No token provided" });
-
   try {
-    const user = await getUserByToken(token);
-    if (!user) return res.status(401).json({ error: "Unauthorized" });
+    const auth = req.headers.authorization || '';
+    const token = auth.startsWith('Bearer ') ? auth.slice(7) : null;
+    if (!token) return res.status(401).json({ error: 'Missing token' });
 
-    req.user = user;
+    const user = await getUserByToken(token);
+    if (!user) return res.status(401).json({ error: 'Invalid token' });
+
+    req.user = user; // มี user_metadata.name, user_metadata.username
     next();
   } catch (err) {
-    res.status(401).json({ error: "Invalid token" });
+    res.status(401).json({ error: err.message });
   }
 }
