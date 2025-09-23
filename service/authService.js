@@ -14,8 +14,8 @@ export async function loginUser(email, password) {
   };
 }
 
-export async function registerUser(email, password) {
-  const { data, error } = await supabaseSignUp(email, password);
+export async function registerUser(name, username, email, password) {
+  const { data, error } = await supabaseSignUp(name, username, email, password);
   if (error) throw new Error(error.message);
 
   return data.user;
