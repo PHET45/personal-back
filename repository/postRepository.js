@@ -5,7 +5,7 @@ export const PostRepository = {
     const { data, error } = await supabase
       .from('posts')
       .select(
-        'id, title, description, image, date, likes_count, category_id, status_id, content,category:categories!posts_category_id_fkey ( id, name )'
+        'id, title, description, image, date, likes_count, category_id, status_id, content,category:categories!posts_category_id_fkey ( id, name ),status:statuses!posts_status_id_fkey ( id, status )'
       )
       .order('date', { ascending: false })
     if (error) throw error

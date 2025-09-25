@@ -1,5 +1,5 @@
 import { PostService } from "../service/postService.js"
-import { errorHandler } from "../middleware/errorMiddleware.js"
+
 
 export const PostController = {
   async getAll(req, res, next) {
