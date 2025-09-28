@@ -7,6 +7,7 @@ import postRoutes from './route/postRoutes.js';
 import categoryRoutes from "./route/categoryRoutes.js"
 import userRoutes from './route/userRoutes.js'
 import authRoutes from "./route/authRoutes.js";
+import statusRoutes from "./route/statusRoutes.js"
 
 const app = express();
 
@@ -31,7 +32,7 @@ app.use('/posts', postRoutes);
 app.use("/categories", categoryRoutes);
 app.use('/users', userRoutes)
 app.use("/api/auth", authRoutes);
-
+app.use("/statuses", statusRoutes);
 
 // Health check
 app.get('/', (req, res) => {
@@ -72,7 +73,11 @@ app.use((req, res) => {
             'GET /health', 
             'GET /posts',
             'GET /categories',
-            'POST /posts',
+            'GET /posts/:id',
+            'GET /statuses',
+            'GET /profile',
+            'POST /api/auth/login',
+            'POST /api/auth/logout',
             'POST/api/auth/register',
             'PUT /posts/:id',
             'DELETE /posts/:id'
