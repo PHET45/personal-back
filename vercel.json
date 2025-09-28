@@ -1,9 +1,5 @@
 {
     "version": 2,
-    "env": {
-    "SUPABASE_URL": "https://vrwgswqbjqgsqmbxhjuv.supabase.co",
-    "SUPABASE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZyd2dzd3FianFnc3FtYnhoanV2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTA0OTUwMywiZXhwIjoyMDc0NjI1NTAzfQ.wuEntaIlJTc1XvDxQwhqPaHbQHsNivc-e-U3fdK0miw"
-    },
     "builds": [
       {
         "src": "app.mjs",
