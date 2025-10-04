@@ -9,36 +9,38 @@ export const LikeService = {
       // unlike
       await LikeRepository.delete(user.id, postId)
       
-      // ✅ แก้: ใช้ RPC หรือ query ปกติ
       const { data: post } = await supabase
         .from('posts')
         .select('likes_count')
         .eq('id', postId)
         .single()
       
+      const newCount = Math.max((post.likes_count || 1) - 1, 0)
+      
       await supabase
         .from('posts')
-        .update({ likes_count: (post.likes_count || 1) - 1 })
+        .update({ likes_count: newCount })
         .eq('id', postId)
       
-      return { liked: false }
+      return { liked: false, likes_count: newCount } // return ค่าใหม่
     } else {
       // like
       await LikeRepository.insert(user.id, postId)
       
-      
       const { data: post } = await supabase
         .from('posts')
         .select('likes_count')
         .eq('id', postId)
         .single()
       
+      const newCount = (post.likes_count || 0) + 1
+      
       await supabase
         .from('posts')
-        .update({ likes_count: (post.likes_count || 0) + 1 })
+        .update({ likes_count: newCount })
         .eq('id', postId)
       
-      return { liked: true }
+      return { liked: true, likes_count: newCount } // return ค่าใหม่
     }
   },
 
