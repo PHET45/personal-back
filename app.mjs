@@ -8,6 +8,7 @@ import categoryRoutes from "./route/categoryRoutes.js"
 import userRoutes from './route/userRoutes.js'
 import authRoutes from "./route/authRoutes.js";
 import statusRoutes from "./route/statusRoutes.js"
+import likeRoutes from './route/likeRoute.js';
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.use("/categories", categoryRoutes);
 app.use('/users', userRoutes)
 app.use("/api/auth", authRoutes);
 app.use("/statuses", statusRoutes);
+app.use('/likes', likeRoutes);
 
 // Health check
 app.get('/', (req, res) => {
