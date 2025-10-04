@@ -3,7 +3,7 @@ import supabase from '../util/supabaseClient.js'
 
 export const LikeService = {
   async toggleLike(user, postId) {
-    if (!user || user.role !== 'authenticated') throw new Error('Unauthorized')
+    
 
     const existing = await LikeRepository.findByUserAndPost(user.id, postId)
 
