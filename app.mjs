@@ -34,7 +34,7 @@ app.use("/categories", categoryRoutes);
 app.use('/users', userRoutes)
 app.use("/api/auth", authRoutes);
 app.use("/statuses", statusRoutes);
-app.use('/likes', likeRoutes);
+app.use('api/likes', likeRoutes);
 
 // Health check
 app.get('/', (req, res) => {
