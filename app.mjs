@@ -34,7 +34,7 @@ app.use("/categories", categoryRoutes);
 app.use('/users', userRoutes)
 app.use("/api/auth", authRoutes);
 app.use("/statuses", statusRoutes);
-app.use('api/likes', likeRoutes);
+app.use('/api/likes', likeRoutes);
 
 // Health check
 app.get('/', (req, res) => {
@@ -78,6 +78,8 @@ app.use((req, res) => {
             'GET /posts/:id',
             'GET /statuses',
             'GET /profile',
+            'GET /api/likes/:postId',        
+            'POST /api/likes/:postId/toggle', 
             'POST /api/auth/login',
             'POST /api/auth/logout',
             'POST/api/auth/register',
