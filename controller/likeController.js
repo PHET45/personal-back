@@ -16,8 +16,9 @@ export const LikeController = {
   async getLikes(req, res) {
     try {
       const postId = req.params.postId
-      const likes_count = await LikeService.getPostLikes(postId)
-      res.json({ likes_count })
+      const user = req.user || null // อาจจะ undefined ถ้าไม่ authenticate
+      const result = await LikeService.getLikesWithUser(user, postId)
+      res.json(result)
     } catch (err) {
       res.status(400).json({ error: err.message })
     }

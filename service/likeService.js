@@ -36,8 +36,17 @@ export const LikeService = {
     return data.likes_count
   },
 
-  async checkIfUserLiked(userId, postId) {
-    const existing = await LikeRepository.findByUserAndPost(userId, postId)
-    return !!existing
+  async getLikesWithUser(user, postId) {
+    const likes_count = await this.getPostLikes(postId)
+    if (!user) {
+      // guest
+      return { likes_count }
+    }
+
+    const existing = await LikeRepository.findByUserAndPost(user.id, postId)
+    return {
+      likes_count,
+      liked: !!existing,
+    }
   }
 }
