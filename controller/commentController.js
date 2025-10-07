@@ -2,14 +2,7 @@
 import { CommentService } from '../service/commentService.js'
 
 export const CommentController = {
-  async getAllComments(req, res) {
-    try {
-      const comments = await CommentService.getAllComments()
-      res.json({ success: true, data: comments })
-    } catch (err) {
-      res.status(400).json({ success: false, message: err.message })
-    }
-  },
+
 
   async getComments(req, res) {
     try {

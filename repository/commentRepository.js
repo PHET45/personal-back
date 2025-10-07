@@ -3,16 +3,7 @@
 import supabase from '../util/supabaseClient.js'
 
 export const CommentRepository = {
-  // ดึงทุก comment
-  async getAllComments() {
-    const { data, error } = await supabase
-      .from('comments')
-      .select('id, comment_text, user_id, post_id, created_at')
-      .order('created_at', { ascending: true })
-
-    if (error) throw new Error(error.message)
-    return data
-  },
+  
 
   async getByPostId(postId) {
     const { data, error } = await supabase

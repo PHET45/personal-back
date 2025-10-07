@@ -2,9 +2,7 @@
 import { CommentRepository } from '../repository/commentRepository.js'
 
 export const CommentService = {
-  async getAllComments() {
-    return await CommentRepository.getAllComments()
-  },
+  
 
   async getCommentsByPost(postId) {
     if (!postId) throw new Error('postId is required')
