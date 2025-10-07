@@ -3,16 +3,26 @@
 import supabase from '../util/supabaseClient.js'
 
 export const CommentRepository = {
-  
-
   async getByPostId(postId) {
     const { data, error } = await supabase
       .from('comments')
-      .select('id, comment_text, user_id, post_id, created_at')
+      .select(
+        `
+      id,
+      comment_text,
+      user_id,
+      post_id,
+      created_at,
+      user:users!left(id, username, avatar)  -- left join
+    `
+      )
       .eq('post_id', postId)
       .order('created_at', { ascending: true })
 
-    if (error) throw new Error(error.message)
+    if (error) {
+      console.error('Error fetching comments:', error)
+      return [] // fallback เป็น array ว่าง
+    }
     return data
   },
 
