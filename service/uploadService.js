@@ -11,7 +11,8 @@ export const uploadService = {
 
     if (error) throw error;
 
-    const profilePicUrl = `https://vrwgswqbjqgsqmbxhjuv.supabase.co/storage/v1/object/public/avatars/${fileName}`;
+    const SUPABASE_URL = process.env.SUPABASE_URL;
+    const profilePicUrl = `${SUPABASE_URL}/storage/v1/object/public/avatars/${fileName}`;
 
     const updatedUser = await uploadRepository.updateProfilePic(userId, profilePicUrl);
     return updatedUser;
