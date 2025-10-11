@@ -1,4 +1,4 @@
-import { loginUser, registerUser } from "../service/authService.js";
+import { loginUser, registerUser, updateAvatar } from "../service/authService.js";
 
 export async function login(req, res) {
   const { email, password } = req.body;
@@ -24,4 +24,19 @@ export async function register(req, res) {
 
 export async function profile(req, res) {
   res.json({ user: req.user });
+}
+
+export async function updateUserAvatar(req, res) {
+  try {
+    const file = req.file;
+    const userId = req.user.id;
+
+    if (!file) return res.status(400).json({ error: "No file uploaded" });
+
+    const { avatarUrl } = await updateAvatar(userId, file);
+
+    res.json({ message: "Avatar updated successfully", avatar_url: avatarUrl });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 }
