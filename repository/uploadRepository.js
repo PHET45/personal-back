@@ -29,13 +29,14 @@ export const uploadRepository = {
     return data;
   },
 
-  // ✅ Update user metadata (ใช้ RPC)
-  updateUserMetadata: async (userId, { name, username }) => {
-    const { data, error } = await supabase.rpc('update_user_metadata', {
-      p_user_id: userId,
-      p_name: name,
-      p_username: username
-    });
+  // ✅ Update user info (name, username) ใน users table
+  updateUserInfo: async (userId, { name, username }) => {
+    const { data, error } = await supabase
+      .from("users")
+      .update({ name, username })
+      .eq("id", userId)
+      .select()
+      .single();
 
     if (error) throw error;
     return data;
@@ -47,7 +48,7 @@ export const uploadRepository = {
       .from("avatars")
       .remove([fileName]);
     
-    if (error) throw error;
+    // ไม่ throw error ถ้าไฟล์ไม่มี
     return true;
   }
 };
