@@ -3,13 +3,15 @@ import supabase from "../util/supabaseClient.js";
 
 export const uploadRepository = {
   updateProfilePic: async (userId, profilePicUrl) => {
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('users')
       .update({ profile_pic: profilePicUrl })
-      .eq('id', userId);
+      .eq('id', userId)
+      .select()
+      .single();
 
     if (error) throw error;
-    return { userId, profilePicUrl };
+    return data; // return updated user
   },
 
   getUserProfile: async (userId) => {

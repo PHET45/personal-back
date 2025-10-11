@@ -3,20 +3,22 @@ import supabase from "../util/supabaseClient.js";
 import { uploadRepository } from '../repository/uploadRepository.js';
 
 export const uploadService = {
-  generateSignedUrl: async (fileName) => {
-    const { signedURL, error } = await supabase.storage
+  uploadProfilePic: async (userId, file) => {
+    const fileName = `${userId}_${Date.now()}_${file.originalname}`;
+    const { data, error } = await supabase.storage
       .from('avatars')
-      .createSignedUploadUrl(fileName, 60); // URL หมดอายุ 60 วินาที
+      .upload(fileName, file.buffer, { contentType: file.mimetype });
 
     if (error) throw error;
-    return signedURL;
-  },
 
-  updateProfilePic: async (userId, profilePicUrl) => {
-    return await uploadRepository.updateProfilePic(userId, profilePicUrl);
+    const profilePicUrl = `https://vrwgswqbjqgsqmbxhjuv.supabase.co/storage/v1/object/public/avatars/${fileName}`;
+
+    const updatedUser = await uploadRepository.updateProfilePic(userId, profilePicUrl);
+    return updatedUser;
   },
 
   getProfile: async (userId) => {
     return await uploadRepository.getUserProfile(userId);
   }
 };
+

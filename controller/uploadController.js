@@ -2,24 +2,14 @@
 import { uploadService } from '../service/uploadService.js';
 
 export const uploadController = {
-  getSignedUrl: async (req, res, next) => {
-    try {
-      const { fileName } = req.body;
-      if (!fileName) return res.status(400).json({ message: 'Missing fileName' });
-
-      const signedUrl = await uploadService.generateSignedUrl(fileName);
-      res.json({ signedUrl });
-    } catch (err) {
-      next(err);
-    }
-  },
-
   updateProfilePic: async (req, res, next) => {
     try {
-      const { userId, profilePicUrl } = req.body;
-      if (!userId || !profilePicUrl) return res.status(400).json({ message: 'Missing parameters' });
+      const file = req.file;
+      const userId = req.user.id; // ต้องได้จาก authenticate middleware
 
-      const updatedUser = await uploadService.updateProfilePic(userId, profilePicUrl);
+      if (!file) return res.status(400).json({ message: "No file uploaded" });
+
+      const updatedUser = await uploadService.uploadProfilePic(userId, file);
       res.json({ user: updatedUser });
     } catch (err) {
       next(err);
