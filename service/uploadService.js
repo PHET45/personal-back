@@ -4,11 +4,10 @@ import { uploadRepository } from "../repository/uploadRepository.js";
 
 export const uploadService = {
   // ✅ Upload profile picture
-  uploadProfilePic: async (userId, file) => {
+  uploadProfilePic: async (userId, file, authMetadata = {}) => {
     try {
       console.log('📸 Starting upload for user:', userId);
       
-      // Get current profile
       let currentProfile;
       try {
         currentProfile = await uploadRepository.getUserProfile(userId);
@@ -47,15 +46,13 @@ export const uploadService = {
 
       console.log('✅ Upload successful:', storageData);
 
-      // Get public URL
       const SUPABASE_URL = process.env.SUPABASE_URL;
       const profilePicUrl = `${SUPABASE_URL}/storage/v1/object/public/avatars/${fileName}`;
       console.log('🔗 Public URL:', profilePicUrl);
 
-      // Update users table
-      await uploadRepository.upsertProfilePic(userId, profilePicUrl);
+      // ✅ ส่ง authMetadata ไปด้วย
+      await uploadRepository.upsertProfilePic(userId, profilePicUrl, authMetadata);
       
-      // Get updated profile
       const updatedProfile = await uploadRepository.getUserProfile(userId);
       console.log('✅ Profile updated:', updatedProfile);
       

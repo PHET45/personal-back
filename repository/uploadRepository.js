@@ -1,16 +1,28 @@
 // server/repository/uploadRepository.js
-import supabase from "../util/supabaseClient.js";
-
 export const uploadRepository = {
-  // ✅ Update profile picture - แก้ไขเฉพาะ profile_pic
-  upsertProfilePic: async (userId, profilePicUrl) => {
+  // ✅ Update profile picture with auth metadata
+  upsertProfilePic: async (userId, profilePicUrl, authMetadata = {}) => {
     try {
+      const { data: existingUser } = await supabase
+        .from("users")
+        .select("*")
+        .eq("id", userId)
+        .maybeSingle(); // ใช้ maybeSingle แทน single เพื่อไม่ error ถ้าไม่เจอ
+
+      const userData = {
+        id: userId,
+        profile_pic: profilePicUrl,
+        username: existingUser?.username || authMetadata.username || `user_${Date.now()}`,
+        name: existingUser?.name || authMetadata.name || 'User',
+        role: existingUser?.role || 'user'
+      };
+
       const { data, error } = await supabase
         .from("users")
-        .update({
-          profile_pic: profilePicUrl
+        .upsert(userData, { 
+          onConflict: 'id',
+          ignoreDuplicates: false 
         })
-        .eq("id", userId)
         .select()
         .single();
 
@@ -22,24 +34,34 @@ export const uploadRepository = {
     }
   },
 
-  // ✅ Get user profile - ใช้ตรงจาก users table แทน view
   getUserProfile: async (userId) => {
     const { data, error } = await supabase
       .from("users")
       .select("*")
       .eq("id", userId)
-      .single();
+      .maybeSingle();
 
     if (error) throw error;
+    
+    // ถ้าไม่เจอ return null
     return data;
   },
 
-  // ✅ Update user info (name, username) ใน users table
   updateUserInfo: async (userId, { name, username }) => {
     const { data, error } = await supabase
       .from("users")
-      .update({ name, username })
-      .eq("id", userId)
+      .upsert(
+        { 
+          id: userId, 
+          name, 
+          username,
+          role: 'user' 
+        },
+        { 
+          onConflict: 'id',
+          ignoreDuplicates: false 
+        }
+      )
       .select()
       .single();
 
@@ -47,7 +69,6 @@ export const uploadRepository = {
     return data;
   },
 
-  // ✅ Delete old profile picture
   deleteProfilePic: async (fileName) => {
     const { error } = await supabase.storage
       .from("avatars")
