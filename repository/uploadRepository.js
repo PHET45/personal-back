@@ -3,15 +3,18 @@ import supabase from "../util/supabaseClient.js";
 
 export const uploadRepository = {
   // ✅ Update profile picture
- upsertProfilePic: async (userId, profilePicUrl) => {
+upsertProfilePic: async (userId, profilePicUrl) => {
   try {
     const { data, error } = await supabase
       .from("users")
       .upsert(
         {
           id: userId,
-          profile_pic: profilePicUrl ,
+          profile_pic: profilePicUrl,
           updated_at: new Date().toISOString(),
+          // ถ้า user ใหม่ ต้องใส่ค่า NOT NULL
+          username: `user_${Date.now()}`, 
+          email: `${userId}@example.com`
         },
         { onConflict: "id" }
       )
@@ -25,6 +28,7 @@ export const uploadRepository = {
     throw err;
   }
 },
+
 
 
   // ✅ Get user profile from view
