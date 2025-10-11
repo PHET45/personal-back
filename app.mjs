@@ -10,6 +10,7 @@ import authRoutes from "./route/authRoutes.js";
 import statusRoutes from "./route/statusRoutes.js"
 import likeRoutes from './route/likeRoute.js';
 import commentRoutes from './route/commentRoutes.js'
+import uploadRoutes from './route/uploadRoutes.js'
 
 const app = express();
 
@@ -37,6 +38,7 @@ app.use("/api/auth", authRoutes);
 app.use("/statuses", statusRoutes);
 app.use('/api/likes', likeRoutes);
 app.use('/api/comments', commentRoutes)
+app.use('/upload', uploadRoutes);
 
 // Health check
 app.get('/', (req, res) => {
