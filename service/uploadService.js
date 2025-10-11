@@ -3,10 +3,16 @@ import supabase from "../util/supabaseClient.js";
 import { uploadRepository } from "../repository/uploadRepository.js";
 
 export const uploadService = {
-  // ✅ Upload profile picture
-  uploadProfilePic: async (userId, file, authMetadata = {}) => {
+  uploadProfilePic: async (userId, file) => {
     try {
       console.log('📸 Starting upload for user:', userId);
+      
+      // ✅ ดึงข้อมูล auth metadata
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      const authMetadata = {
+        name: authUser?.user_metadata?.name,
+        username: authUser?.user_metadata?.username
+      };
       
       let currentProfile;
       try {
@@ -15,7 +21,6 @@ export const uploadService = {
         console.log('No existing profile found, continuing...');
       }
       
-      // Delete old picture if exists
       if (currentProfile?.profile_pic) {
         const urlParts = currentProfile.profile_pic.split('/');
         const oldFileName = urlParts[urlParts.length - 1];
@@ -28,7 +33,6 @@ export const uploadService = {
         }
       }
 
-      // Upload new picture
       const fileName = `${userId}_${Date.now()}_${file.originalname}`;
       console.log('⬆️ Uploading new picture:', fileName);
       
@@ -63,7 +67,6 @@ export const uploadService = {
     }
   },
 
-  // ✅ Get profile
   getProfile: async (userId) => {
     try {
       return await uploadRepository.getUserProfile(userId);
@@ -73,15 +76,12 @@ export const uploadService = {
     }
   },
 
-  // ✅ Update profile info
   updateProfile: async (userId, { name, username }) => {
     try {
       console.log('📝 Updating profile for user:', userId, { name, username });
       
-      // Update users table
       await uploadRepository.updateUserInfo(userId, { name, username });
       
-      // Get updated profile
       const updatedProfile = await uploadRepository.getUserProfile(userId);
       console.log('✅ Profile info updated:', updatedProfile);
       
