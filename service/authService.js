@@ -2,7 +2,6 @@ import {
   supabaseSignIn,
   supabaseSignUp,
   supabaseGetUser,
-  supabaseUpdateAvatar ,
 } from "../repository/authRepository.js";
 
 
@@ -30,27 +29,3 @@ export async function getUserByToken(token) {
   return data.user;
 }
 
-export async function updateAvatar(userId, file) {
-  const fileExt = file.originalname.split(".").pop();
-  const fileName = `${userId}/${uuidv4()}.${fileExt}`;
-
-  // 🔹 Upload ไป Supabase Storage (bucket: "avatars")
-  const { error: uploadError } = await supabase.storage
-    .from("avatars")
-    .upload(fileName, file.buffer, {
-      contentType: file.mimetype,
-      upsert: true,
-    });
-
-  if (uploadError) throw new Error(uploadError.message);
-
-  // 🔹 Get public URL
-  const {
-    data: { publicUrl },
-  } = supabase.storage.from("avatars").getPublicUrl(fileName);
-
-  // 🔹 Update user_metadata
-  const updatedUser = await supabaseUpdateAvatar(userId, publicUrl);
-
-  return { avatarUrl: publicUrl, updatedUser };
-}
