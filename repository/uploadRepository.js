@@ -1,4 +1,6 @@
+
 // server/repository/uploadRepository.js
+import supabase from "../util/supabaseClient.js";
 export const uploadRepository = {
   // ✅ Update profile picture with auth metadata
   upsertProfilePic: async (userId, profilePicUrl, authMetadata = {}) => {
