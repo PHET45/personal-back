@@ -4,30 +4,26 @@ import supabase from "../util/supabaseClient.js";
 export const uploadRepository = {
   // ✅ Update profile picture
  upsertProfilePic: async (userId, profilePicUrl) => {
-  profilePicUrl = profilePicUrl.trim();
+  try {
+    const { data, error } = await supabase
+      .from("users")
+      .upsert(
+        {
+          id: userId,
+          profile_pic: profilePicUrl ,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "id" }
+      )
+      .select()
+      .single();
 
-  // ดึง row เดิม
-  const { data: existingUser } = await supabase
-    .from("users")
-    .select("name, username, role")
-    .eq("id", userId)
-    .single();
-
-  const name = existingUser?.name || '';
-  const username = existingUser?.username || `user_${userId.substring(0, 8)}`;
-  const role = existingUser?.role || 'user'; // <-- default role
-
-  const { data, error } = await supabase
-    .from("users")
-    .upsert(
-      { id: userId, profile_pic: profilePicUrl, name, username, role },
-      { onConflict: "id" }
-    )
-    .select()
-    .single();
-
-  if (error) throw error;
-  return data;
+    if (error) throw error;
+    return data;
+  } catch (err) {
+    console.error("Error in upsertProfilePic:", err.message);
+    throw err;
+  }
 },
 
 
