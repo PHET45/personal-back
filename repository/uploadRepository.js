@@ -4,18 +4,31 @@ import supabase from "../util/supabaseClient.js";
 export const uploadRepository = {
   // ✅ Update profile picture
   upsertProfilePic: async (userId, profilePicUrl) => {
-    const { data, error } = await supabase
-      .from("users")
-      .upsert(
-        { id: userId, profile_pic: profilePicUrl },
-        { onConflict: "id" }
-      )
-      .select()
-      .single();
+  // 1️⃣ ดึง row เดิมถ้ามี
+  const { data: existingUser } = await supabase
+    .from("users")
+    .select("name, username")
+    .eq("id", userId)
+    .single();
 
-    if (error) throw error;
-    return data;
-  },
+  // 2️⃣ ถ้าไม่มี row เดิม ให้สร้างค่า default
+  const name = existingUser?.name || '';
+  const username = existingUser?.username || `user_${userId.substring(0, 8)}`;
+
+  // 3️⃣ Upsert
+  const { data, error } = await supabase
+    .from("users")
+    .upsert(
+      { id: userId, profile_pic: profilePicUrl, name, username },
+      { onConflict: "id" }
+    )
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+},
+
 
   // ✅ Get user profile from view
   getUserProfile: async (userId) => {
