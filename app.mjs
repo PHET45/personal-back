@@ -86,6 +86,7 @@ app.use((req, res) => {
             'POST /api/likes/:postId/toggle', 
             'POST /api/auth/login',
             'POST /api/auth/logout',
+            'POST /api/auth//change-password',
             'POST/api/auth/register',
             'PUT /posts/:id',
             'DELETE /posts/:id'
