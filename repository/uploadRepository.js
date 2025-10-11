@@ -2,41 +2,32 @@
 import supabase from "../util/supabaseClient.js";
 
 export const uploadRepository = {
-  // ✅ Update profile picture
-upsertProfilePic: async (userId, profilePicUrl) => {
-  try {
-    const { data, error } = await supabase
-      .from("users")
-      .upsert(
-        {
-          id: userId,
-          profile_pic: profilePicUrl,
-          updated_at: new Date().toISOString(),
-          // ถ้า user ใหม่ ต้องใส่ค่า NOT NULL
-          username: `user_${Date.now()}`, 
-          email: `${userId}@example.com`
-        },
-        { onConflict: "id" }
-      )
-      .select()
-      .single();
+  // ✅ Update profile picture - แก้ไขเฉพาะ profile_pic
+  upsertProfilePic: async (userId, profilePicUrl) => {
+    try {
+      const { data, error } = await supabase
+        .from("users")
+        .update({
+          profile_pic: profilePicUrl
+        })
+        .eq("id", userId)
+        .select()
+        .single();
 
-    if (error) throw error;
-    return data;
-  } catch (err) {
-    console.error("Error in upsertProfilePic:", err.message);
-    throw err;
-  }
-},
+      if (error) throw error;
+      return data;
+    } catch (err) {
+      console.error("Error in upsertProfilePic:", err.message);
+      throw err;
+    }
+  },
 
-
-
-  // ✅ Get user profile from view
+  // ✅ Get user profile - ใช้ตรงจาก users table แทน view
   getUserProfile: async (userId) => {
     const { data, error } = await supabase
-      .from("user_profiles")
+      .from("users")
       .select("*")
-      .eq("user_id", userId)
+      .eq("id", userId)
       .single();
 
     if (error) throw error;
@@ -62,7 +53,6 @@ upsertProfilePic: async (userId, profilePicUrl) => {
       .from("avatars")
       .remove([fileName]);
     
-    // ไม่ throw error ถ้าไฟล์ไม่มี
     return true;
   }
 };
