@@ -5,33 +5,45 @@ import { uploadRepository } from "../repository/uploadRepository.js";
 export const uploadService = {
   // ✅ Upload profile picture
   uploadProfilePic: async (userId, file) => {
-    // ลบรูปเก่าก่อน (ถ้ามี)
-    const profile = await uploadRepository.getUserProfile(userId);
-    if (profile?.profile_pic) {
-      const oldFileName = profile.profile_pic.split('/').pop();
-      await supabase.storage.from("avatars").remove([oldFileName]);
+    try {
+      // Get current profile to delete old picture
+      const currentProfile = await uploadRepository.getUserProfile(userId);
+      
+      // Delete old picture if exists
+      if (currentProfile?.profile_pic) {
+        const oldFileName = currentProfile.profile_pic.split('/').pop();
+        try {
+          await uploadRepository.deleteProfilePic(oldFileName);
+        } catch (err) {
+          console.log('Old picture not found, continuing...');
+        }
+      }
+
+      // Upload new picture
+      const fileName = `${userId}_${Date.now()}_${file.originalname}`;
+      const { data: storageData, error: storageError } = await supabase.storage
+        .from("avatars")
+        .upload(fileName, file.buffer, { 
+          contentType: file.mimetype,
+          upsert: true 
+        });
+
+      if (storageError) throw storageError;
+
+      // Get public URL
+      const SUPABASE_URL = process.env.SUPABASE_URL;
+      const profilePicUrl = `${SUPABASE_URL}/storage/v1/object/public/avatars/${fileName}`;
+
+      // Update profile_pic in users table
+      await uploadRepository.upsertProfilePic(userId, profilePicUrl);
+      
+      // Get updated profile
+      const updatedProfile = await uploadRepository.getUserProfile(userId);
+      return updatedProfile;
+    } catch (error) {
+      console.error('Upload service error:', error);
+      throw error;
     }
-
-    // Upload รูปใหม่
-    const fileName = `${userId}_${Date.now()}_${file.originalname}`;
-    const { data: storageData, error: storageError } = await supabase.storage
-      .from("avatars")
-      .upload(fileName, file.buffer, { 
-        contentType: file.mimetype,
-        upsert: true 
-      });
-
-    if (storageError) throw storageError;
-
-    const SUPABASE_URL = process.env.SUPABASE_URL;
-    const profilePicUrl = `${SUPABASE_URL}/storage/v1/object/public/avatars/${fileName}`;
-
-    // Update ใน users table
-    const updatedUser = await uploadRepository.upsertProfilePic(userId, profilePicUrl);
-    
-    // ดึงข้อมูลล่าสุดจาก view
-    const fullProfile = await uploadRepository.getUserProfile(userId);
-    return fullProfile;
   },
 
   // ✅ Get profile
@@ -39,12 +51,18 @@ export const uploadService = {
     return await uploadRepository.getUserProfile(userId);
   },
 
-  // ✅ เพิ่ม: Update profile info
+  // ✅ Update profile info
   updateProfile: async (userId, { name, username }) => {
-    // Update metadata ใน auth.users
-    await uploadRepository.updateUserMetadata(userId, { name, username });
-    
-    // Return ข้อมูลล่าสุด
-    return await uploadRepository.getUserProfile(userId);
+    try {
+      // Update metadata using RPC
+      await uploadRepository.updateUserMetadata(userId, { name, username });
+      
+      // Get updated profile
+      const updatedProfile = await uploadRepository.getUserProfile(userId);
+      return updatedProfile;
+    } catch (error) {
+      console.error('Update profile service error:', error);
+      throw error;
+    }
   }
 };

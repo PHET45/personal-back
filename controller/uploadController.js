@@ -8,16 +8,22 @@ export const uploadController = {
       const file = req.file;
       const userId = req.user.id;
 
+      console.log('Upload request:', { userId, file: file?.originalname });
+
       if (!file) {
         return res.status(400).json({ message: "No file uploaded" });
       }
 
       const profile = await uploadService.uploadProfilePic(userId, file);
+      
+      console.log('Upload success:', profile);
+      
       res.json({ 
         message: "Profile picture updated successfully",
         profile 
       });
     } catch (err) {
+      console.error('Upload controller error:', err);
       next(err);
     }
   },
@@ -26,6 +32,9 @@ export const uploadController = {
   getProfile: async (req, res, next) => {
     try {
       const userId = req.params.userId || req.user.id;
+      
+      console.log('Get profile request:', { userId });
+      
       const profile = await uploadService.getProfile(userId);
       
       if (!profile) {
@@ -34,15 +43,18 @@ export const uploadController = {
 
       res.json({ profile });
     } catch (err) {
+      console.error('Get profile controller error:', err);
       next(err);
     }
   },
 
-  // ✅ เพิ่ม: Update profile info (name, username)
+  // ✅ Update profile info
   updateProfileInfo: async (req, res, next) => {
     try {
       const userId = req.user.id;
       const { name, username } = req.body;
+
+      console.log('Update profile request:', { userId, name, username });
 
       if (!name || !username) {
         return res.status(400).json({ 
@@ -51,11 +63,15 @@ export const uploadController = {
       }
 
       const profile = await uploadService.updateProfile(userId, { name, username });
+      
+      console.log('Update success:', profile);
+      
       res.json({ 
         message: "Profile updated successfully",
         profile 
       });
     } catch (err) {
+      console.error('Update profile controller error:', err);
       next(err);
     }
   }

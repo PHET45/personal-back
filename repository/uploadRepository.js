@@ -2,7 +2,7 @@
 import supabase from "../util/supabaseClient.js";
 
 export const uploadRepository = {
-  // ✅ Update profile_pic ใน users table
+  // ✅ Update profile picture
   upsertProfilePic: async (userId, profilePicUrl) => {
     const { data, error } = await supabase
       .from("users")
@@ -17,28 +17,37 @@ export const uploadRepository = {
     return data;
   },
 
-  // ✅ ดึงข้อมูลจาก view (แก้ไข filter เป็น user_id)
+  // ✅ Get user profile from view
   getUserProfile: async (userId) => {
     const { data, error } = await supabase
       .from("user_profiles")
       .select("*")
-      .eq("user_id", userId)  // ✅ แก้เป็น user_id
+      .eq("user_id", userId)
       .single();
 
     if (error) throw error;
     return data;
   },
 
-  // ✅ เพิ่ม: Update user metadata (name, username)
+  // ✅ Update user metadata (ใช้ RPC)
   updateUserMetadata: async (userId, { name, username }) => {
-    const { data: userData, error: userError } = await supabase.auth.admin.updateUserById(
-      userId,
-      {
-        user_metadata: { name, username }
-      }
-    );
+    const { data, error } = await supabase.rpc('update_user_metadata', {
+      p_user_id: userId,
+      p_name: name,
+      p_username: username
+    });
 
-    if (userError) throw userError;
-    return userData;
+    if (error) throw error;
+    return data;
+  },
+
+  // ✅ Delete old profile picture
+  deleteProfilePic: async (fileName) => {
+    const { error } = await supabase.storage
+      .from("avatars")
+      .remove([fileName]);
+    
+    if (error) throw error;
+    return true;
   }
 };
