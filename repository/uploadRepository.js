@@ -2,7 +2,7 @@
 import supabase from "../util/supabaseClient.js";
 
 export const uploadRepository = {
-  // ✅ Upsert with auth metadata sync
+  // ✅ Upsert with auth metadata syn
   upsertProfilePic: async (userId, profilePicUrl, authMetadata = {}) => {
     try {
       const { data: existingUser } = await supabase
