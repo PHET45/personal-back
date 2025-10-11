@@ -3,23 +3,24 @@ import supabase from "../util/supabaseClient.js";
 
 export const uploadRepository = {
   // ✅ Update profile picture
-  upsertProfilePic: async (userId, profilePicUrl) => {
-  // 1️⃣ ดึง row เดิมถ้ามี
+ upsertProfilePic: async (userId, profilePicUrl) => {
+  profilePicUrl = profilePicUrl.trim();
+
+  // ดึง row เดิม
   const { data: existingUser } = await supabase
     .from("users")
-    .select("name, username")
+    .select("name, username, role")
     .eq("id", userId)
     .single();
 
-  // 2️⃣ ถ้าไม่มี row เดิม ให้สร้างค่า default
   const name = existingUser?.name || '';
   const username = existingUser?.username || `user_${userId.substring(0, 8)}`;
+  const role = existingUser?.role || 'user'; // <-- default role
 
-  // 3️⃣ Upsert
   const { data, error } = await supabase
     .from("users")
     .upsert(
-      { id: userId, profile_pic: profilePicUrl, name, username },
+      { id: userId, profile_pic: profilePicUrl, name, username, role },
       { onConflict: "id" }
     )
     .select()
