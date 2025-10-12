@@ -1,3 +1,4 @@
+//repository/authRepository.js
 import supabase from "../util/supabaseClient.js";
 
 

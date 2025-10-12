@@ -1,3 +1,4 @@
+//middleware/authMiddleware.js
 import { getUserByToken } from "../service/authService.js";
 
 export async function authenticate(req, res, next) {

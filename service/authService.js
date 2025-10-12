@@ -1,3 +1,4 @@
+//service/authService.js
 import {
   supabaseSignIn,
   supabaseSignUp,

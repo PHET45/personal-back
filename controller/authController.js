@@ -58,30 +58,46 @@ export const authController = {
         });
       }
 
-      // Get user email
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      // ✅ ดึง user จาก database
+      const { data: { user }, error: userError } = await supabase.auth.admin.getUserById(userId);
       
       if (userError || !user) {
+        console.error('❌ User not found:', userError);
         return res.status(401).json({ message: "User not found" });
       }
 
-      // Verify current password by attempting to sign in
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: user.email,
-        password: currentPassword,
-      });
+      console.log('👤 User found:', user.email);
 
-      if (signInError) {
+      // ✅ วิธีใหม่: ใช้ Supabase REST API โดยตรง (ไม่ต้อง anon key)
+      const verifyResponse = await fetch(
+        `${process.env.SUPABASE_URL}/auth/v1/token?grant_type=password`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': process.env.SUPABASE_KEY
+          },
+          body: JSON.stringify({
+            email: user.email,
+            password: currentPassword
+          })
+        }
+      );
+
+      if (!verifyResponse.ok) {
         console.log('❌ Current password incorrect');
         return res.status(401).json({
           message: "Current password is incorrect"
         });
       }
 
-      // Update password
-      const { error: updateError } = await supabase.auth.updateUser({
-        password: newPassword
-      });
+      console.log('✅ Current password verified');
+
+      // ✅ Update password
+      const { error: updateError } = await supabase.auth.admin.updateUserById(
+        userId,
+        { password: newPassword }
+      );
 
       if (updateError) {
         console.error('❌ Password update error:', updateError);
