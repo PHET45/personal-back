@@ -23,7 +23,7 @@ router.put('/profile-pic', authenticate, upload.single('file'), uploadController
 router.get('/profile', authenticate, uploadController.getProfile);
 
 // ✅ Get other user's profile
-router.get('/profile/:userId', authenticate, uploadController.getProfile);
+router.get('/profile/:userId', uploadController.getPublicProfile);
 
 // ✅ Update profile info (name, username)
 router.put('/profile', authenticate, uploadController.updateProfileInfo);

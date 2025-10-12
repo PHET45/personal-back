@@ -61,6 +61,35 @@ export const uploadController = {
     }
   },
 
+  // ✅ Get public profile (ไม่ต้อง login)
+  getPublicProfile: async (req, res, next) => {
+    try {
+      const userId = req.params.userId;
+      
+      console.log('📖 Get public profile request:', { userId });
+      
+      const profile = await uploadService.getProfile(userId);
+      
+      if (!profile) {
+        return res.status(404).json({ message: "Profile not found" });
+      }
+
+      // ✅ ส่งเฉพาะข้อมูลที่ควร public
+      const publicProfile = {
+        user_id: profile.user_id,
+        name: profile.name,
+        username: profile.username,
+        profile_pic: profile.profile_pic,
+        // ❌ ไม่ส่ง email หรือข้อมูลส่วนตัวอื่นๆ
+      };
+
+      res.json({ profile: publicProfile });
+    } catch (err) {
+      console.error('Get public profile error:', err);
+      next(err);
+    }
+  },
+
   // ✅ Update profile info
   updateProfileInfo: async (req, res, next) => {
     try {
