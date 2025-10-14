@@ -105,7 +105,7 @@ export const uploadRepository = {
 
       const { data, error } = await supabase.storage
         .from('images') 
-        .upload(fileName, buffer, {
+        .upload(fileName, file,buffer, {
           contentType: mimeType,
           upsert: false,
         })
