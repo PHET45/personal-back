@@ -42,7 +42,7 @@ export const PostRepository = {
   },
 
 
-  async getAll() {
+  async getAllSimple() {
     const { data, error } = await supabase
       .from('posts')
       .select(
