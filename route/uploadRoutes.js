@@ -28,4 +28,7 @@ router.get('/profile/:userId', uploadController.getPublicProfile);
 // ✅ Update profile info (name, username)
 router.put('/profile', authenticate, uploadController.updateProfileInfo);
 
+router.post('/', authenticate, uploadController.uploadPostImage); 
+router.delete('/image', authenticate, uploadController.deletePostImage); 
+
 export default router;
