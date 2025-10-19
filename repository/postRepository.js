@@ -4,23 +4,37 @@ import supabase from '../util/supabaseClient.js'
 export const PostRepository = {
 
    async getAll(options = {}) {
-    const { publishedOnly = false, page = 1, limit = 6 } = options
+    const { publishedOnly = false, page = 1, limit = 6, category = null } = options
     
     let query = supabase
       .from('posts')
       .select(
         'id, title, description, image, date, likes_count, category_id, status_id, content, category:categories!posts_category_id_fkey ( id, name ), status:statuses!posts_status_id_fkey ( id, status )',
-        { count: 'exact' } // 🆕 นับจำนวนทั้งหมด
+        { count: 'exact' }
       )
     
-    // 🎯 ถ้าเป็น public ให้กรองเฉพาะ published
+    // ถ้าเป็น public ให้กรองเฉพาะ published
     if (publishedOnly) {
       query = query.eq('status_id', 2)
     }
     
+    // ✅ เพิ่ม filter category
+    if (category) {
+      // หา category_id จากชื่อ category ก่อน
+      const { data: categoryData } = await supabase
+        .from('categories')
+        .select('id')
+        .eq('name', category)
+        .single()
+      
+      if (categoryData) {
+        query = query.eq('category_id', categoryData.id)
+      }
+    }
+    
     query = query.order('date', { ascending: false })
     
-    // 🆕 เพิ่ม pagination
+    // เพิ่ม pagination
     const from = (page - 1) * limit
     const to = from + limit - 1
     query = query.range(from, to)
@@ -28,7 +42,6 @@ export const PostRepository = {
     const { data, error, count } = await query
     if (error) throw error
     
-    // 🆕 return ทั้ง data และ metadata
     return {
       data,
       pagination: {
