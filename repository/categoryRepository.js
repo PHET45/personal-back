@@ -11,7 +11,16 @@ export const CategoryRepository = {
     if (error) throw error
     return data
   },
-    async create(name) {
+  async getById(id) {
+    const { data, error } = await supabase
+      .from('categories')
+      .select('id, name')
+      .eq('id', id)
+      .single() // รับแค่ record เดียว
+    if (error) throw error
+    return data
+  },
+  async create(name) {
     const { data, error } = await supabase
       .from('categories')
       .insert([{ name }])
@@ -31,10 +40,7 @@ export const CategoryRepository = {
   },
 
   async remove(id) {
-    const { error } = await supabase
-      .from('categories')
-      .delete()
-      .eq('id', id)
+    const { error } = await supabase.from('categories').delete().eq('id', id)
     if (error) throw error
     return true
   },

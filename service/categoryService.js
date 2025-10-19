@@ -6,6 +6,8 @@ export const CategoryService = {
 
   createCategory: (name) => CategoryRepository.create(name),
 
+  getCategoryById: (id) => CategoryRepository.getById(id),
+
   updateCategory: (id, name) => CategoryRepository.update(id, name),
 
   deleteCategory: (id) => CategoryRepository.remove(id),
