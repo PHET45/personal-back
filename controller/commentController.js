@@ -2,7 +2,15 @@
 import { CommentService } from '../service/commentService.js'
 
 export const CommentController = {
-
+  async getNotifications(req, res) {
+    try {
+      const user_id = req.user.id // จาก token
+      const notifications = await CommentService.getNotifications(user_id)
+      res.json({ success: true, data: notifications })
+    } catch (err) {
+      res.status(400).json({ success: false, message: err.message })
+    }
+  },
 
   async getComments(req, res) {
     try {

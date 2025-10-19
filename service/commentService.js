@@ -2,8 +2,10 @@
 import { CommentRepository } from '../repository/commentRepository.js'
 
 export const CommentService = {
-  
-
+  async getNotifications(userId) {
+    if (!userId) throw new Error('userId is required')
+    return await CommentRepository.getNotificationsByUserId(userId)
+  },
   async getCommentsByPost(postId) {
     if (!postId) throw new Error('postId is required')
     return await CommentRepository.getByPostId(postId)
