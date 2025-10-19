@@ -53,7 +53,16 @@ export const uploadRepository = {
   // ✅ Update และ sync กับ Supabase Auth
   updateUserInfo: async (userId, { name, username }) => {
     try {
-      // 1. Update ใน users table
+      // ดึงข้อมูลเดิมมาก่อน
+      const { data: existingUser } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', userId)
+        .maybeSingle()
+
+      const currentRole = existingUser?.role || 'user'
+
+      // 1. Update ใน users table โดยเก็บ role เดิมไว้
       const { data, error } = await supabase
         .from('users')
         .upsert(
@@ -61,7 +70,7 @@ export const uploadRepository = {
             id: userId,
             name,
             username,
-            role: 'user',
+            role: currentRole, // ✅ เก็บ role เดิมไว้
           },
           {
             onConflict: 'id',
@@ -83,7 +92,6 @@ export const uploadRepository = {
 
       if (authError) {
         console.error('Failed to sync with auth:', authError)
-        // ไม่ throw error เพราะ users table อัปเดตสำเร็จแล้ว
       }
 
       return data
@@ -104,8 +112,8 @@ export const uploadRepository = {
       console.log('⬆️ Uploading image to Supabase:', fileName)
 
       const { data, error } = await supabase.storage
-        .from('images') 
-        .upload(fileName,buffer, {
+        .from('images')
+        .upload(fileName, buffer, {
           contentType: mimeType,
           upsert: false,
         })
