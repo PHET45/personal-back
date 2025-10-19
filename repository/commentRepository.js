@@ -40,20 +40,25 @@ export const CommentRepository = {
         throw new Error(`Failed to fetch posts: ${postsErr.message}`)
       }
 
-      // 3️⃣ ดึงข้อมูลผู้ใช้ทั้งหมด
-      const { data: users, error: usersErr } = await supabase.auth.admin.listUsers()
+      // 3️⃣ ดึงข้อมูลผู้ใช้จาก table users
+      const userIds = [...new Set(comments.map(c => c.user_id))]
+      
+      const { data: users, error: usersErr } = await supabase
+        .from('users')
+        .select('id, name, username, profile_pic')
+        .in('id', userIds)
 
       if (usersErr) {
         console.error('❌ Error fetching users:', usersErr)
         throw new Error(`Failed to fetch users: ${usersErr.message}`)
       }
 
-      const usersById = users.users.reduce((acc, u) => {
+      const usersById = (users || []).reduce((acc, u) => {
         acc[u.id] = {
           id: u.id,
-          name: u.user_metadata?.name || null,
-          username: u.user_metadata?.username || null,
-          profile_pic: u.user_metadata?.profile_pic || null
+          name: u.name || null,
+          username: u.username || null,
+          profile_pic: u.profile_pic || null
         }
         return acc
       }, {})
