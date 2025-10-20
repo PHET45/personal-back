@@ -3,7 +3,7 @@
 import supabase from '../util/supabaseClient.js'
 
 export const CommentRepository = {
-    async getNotificationsByUserId(userId) {
+  async getNotificationsByUserId(userId) {
     try {
       console.log('🔍 Fetching notifications for admin:', userId)
 
@@ -28,8 +28,8 @@ export const CommentRepository = {
       console.log(`✅ Found ${comments.length} comments from others`)
 
       // 2️⃣ ดึงข้อมูล posts ที่เกี่ยวข้อง
-      const postIds = [...new Set(comments.map(c => c.post_id))]
-      
+      const postIds = [...new Set(comments.map((c) => c.post_id))]
+
       const { data: posts, error: postsErr } = await supabase
         .from('posts')
         .select('id, title, image, description')
@@ -41,8 +41,8 @@ export const CommentRepository = {
       }
 
       // 3️⃣ ดึงข้อมูลผู้ใช้จาก table users
-      const userIds = [...new Set(comments.map(c => c.user_id))]
-      
+      const userIds = [...new Set(comments.map((c) => c.user_id))]
+
       const { data: users, error: usersErr } = await supabase
         .from('users')
         .select('id, name, username, profile_pic')
@@ -58,7 +58,7 @@ export const CommentRepository = {
           id: u.id,
           name: u.name || null,
           username: u.username || null,
-          profile_pic: u.profile_pic || null
+          profile_pic: u.profile_pic || null,
         }
         return acc
       }, {})
@@ -69,7 +69,7 @@ export const CommentRepository = {
           id: p.id,
           title: p.title,
           image_url: p.image, // แปลง image -> image_url
-          description: p.description
+          description: p.description,
         }
         return acc
       }, {})
@@ -78,18 +78,48 @@ export const CommentRepository = {
       const notifications = comments.map((c) => ({
         ...c,
         user: usersById[c.user_id] || null,
-        post: postsById[c.post_id] || null
+        post: postsById[c.post_id] || null,
       }))
 
       console.log(`✅ Returning ${notifications.length} notifications`)
       return notifications
-
     } catch (error) {
       console.error('❌ Error in getNotificationsByUserId:', error)
       throw error
     }
   },
 
+  async getByPostId(postId) {
+    // 1️⃣ ดึง comments ทั้งหมด
+    const { data: comments, error: commentsErr } = await supabase
+      .from('comments')
+      .select('id, comment_text, user_id, post_id, created_at')
+      .eq('post_id', postId)
+      .order('created_at', { ascending: true })
+    if (commentsErr) throw new Error('Failed to fetch comments')
+    if (!comments?.length) return []
+    // 2️⃣ ดึงข้อมูลผู้ใช้ทั้งหมดจาก auth.users
+    const { data: users, error: usersErr } =
+      await supabase.auth.admin.listUsers()
+
+    if (usersErr) throw new Error('Failed to fetch users')
+
+    // 3️⃣ สร้างแผนที่ผู้ใช้
+    const usersById = users.users.reduce((acc, u) => {
+      acc[u.id] = {
+        id: u.id,
+        name: u.user_metadata?.name || null,
+        username: u.user_metadata?.username || null,
+      }
+      return acc
+    }, {})
+
+    // 4️⃣ รวมผลลัพธ์
+    return comments.map((c) => ({
+      ...c,
+      user: usersById[c.user_id] || null,
+    }))
+  },
   async createComment({ post_id, user_id, comment_text }) {
     const { data, error } = await supabase
       .from('comments')
