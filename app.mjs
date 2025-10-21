@@ -11,6 +11,7 @@ import statusRoutes from "./route/statusRoutes.js"
 import likeRoutes from './route/likeRoute.js';
 import commentRoutes from './route/commentRoutes.js'
 import uploadRoutes from './route/uploadRoutes.js'
+import aiRoutes from "./route/aiRoutes.js"
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use("/statuses", statusRoutes);
 app.use('/api/likes', likeRoutes);
 app.use('/api/comments', commentRoutes)
 app.use('/upload', uploadRoutes);
+app.use("/api/ai", aiRoutes);
 
 // Health check
 app.get('/', (req, res) => {
